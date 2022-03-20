@@ -15,6 +15,7 @@ public class game implements ActionListener {
     //answer is a placeholder for a random word for now
 
     ArrayList<JTextField> lists;
+    Font font1 = new Font("SansSerif", Font.BOLD, 30);
     private int count = 0;
     private int correct = 0;
     JFrame frame;
@@ -29,6 +30,7 @@ public class game implements ActionListener {
         for (int x = 0; x < 20; x++) {
             lists.add(new JTextField());
             lists.get(x).setDocument(new textFieldLimit(1));
+            lists.get(x).setFont(font1);
             frame.add(lists.get(x));
             if (x > 4) {
                 lists.get(x).setEditable(false);
