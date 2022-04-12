@@ -23,8 +23,7 @@ public class game implements ActionListener {
     private int count = 0;
     private int correct = 0;
     JFrame frame;
-    private final String answer = "hello";
-    // gameAnswer(fileInput);
+    private final String answer = gameAnswer(fileInput);
 
     //textFieldLimit class is connected here and is what restricts our input correctly for JTextFields
     public game() throws Exception {
