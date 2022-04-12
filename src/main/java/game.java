@@ -23,11 +23,16 @@ public class game implements ActionListener {
     private int count = 0;
     private int correct = 0;
     JFrame frame;
-    private final String answer = gameAnswer(fileInput);
+    private final String answer = "hello";
+    // gameAnswer(fileInput);
 
     //textFieldLimit class is connected here and is what restricts our input correctly for JTextFields
     public game() throws Exception {
         frame = new JFrame("Wordle or Not");
+        JOptionPane.showMessageDialog(null,
+                "Lowercase Only!  Good luck!",
+                "Instructions",
+                JOptionPane.WARNING_MESSAGE);
         JButton submit = new JButton("Submit");
         submit.addActionListener(this);
         initLists();
@@ -45,7 +50,6 @@ public class game implements ActionListener {
 
             while (initArr < 5) {
                 arr.add(String.valueOf(answer.charAt(initArr)));
-                System.out.println(arr.get(initArr));
                 initArr++;
 
             }
@@ -53,6 +57,19 @@ public class game implements ActionListener {
             count += 5;
             if (correct != 5) {
                 lineEditable();
+            }
+            if (correct == 5) {
+                JOptionPane.showMessageDialog(null,
+                        "YOU WIN!",
+                        "Victory!",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+            if (count == 20 && correct != 5) {
+                JOptionPane.showMessageDialog(null,
+                        "Good try!" + "  The word was [" + answer + "]",
+                        "Better luck next time!",
+                        JOptionPane.WARNING_MESSAGE);
+                System.exit(0);
             }
 
         }
