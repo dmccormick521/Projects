@@ -7,8 +7,14 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 //This is an attempt at making wordle
+//could reduce hardcoding on a few values if I wanted to be able to expand this in the future
+//namely just the iteration numbers could be a variable
+//also could create a better way to build my grid rows
+//could make an object for it, and loop through the objects instead
+//however it has full functionality already so this would just be nitpicking
 public class game implements ActionListener {
 
     //List holds our JTextField objects
@@ -37,8 +43,16 @@ public class game implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         String s = e.getActionCommand();
         if (s.equals("Submit") && correct != 5 && allFilled()) {
+            //need good way to check for multiple values
+            ArrayList<String> arr = new ArrayList<String>();
+            //
             int i = 0;
             correct = 0;
+            //could use an arraylist here
+            //check for all the correct values first
+            //remove them from the arraylist
+            //then loop through to set the yellow values
+            //removing them as they occur so I end up with the correct amount
             while (i < 5) {
                 if (answer.charAt(i) == lists.get(count).getText().charAt(0)) {
                     lists.get(count).setBackground(Color.green);
@@ -52,6 +66,7 @@ public class game implements ActionListener {
                 count++;
                 i++;
             }
+
             if (correct != 5) {
                 lineEditable();
             }
@@ -82,6 +97,7 @@ public class game implements ActionListener {
         return true;
     }
 
+    //contains many jframe values that are manipulated through this list
     public void initLists() {
         lists = new ArrayList<>();
         for (int x = 0; x < 20; x++) {
@@ -105,6 +121,7 @@ public class game implements ActionListener {
         frame.setVisible(true);
     }
 
+    //grabs answer from a random line in the text file provided
     public String gameAnswer(File file) throws Exception {
         RandomAccessFile f = new RandomAccessFile(file, "r");
         long random = System.currentTimeMillis();
