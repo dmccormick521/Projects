@@ -7,20 +7,16 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
-import java.util.HashMap;
 
-//This is an attempt at making wordle
-//could reduce hardcoding on a few values if I wanted to be able to expand this in the future
-//namely just the iteration numbers could be a variable
-//also could create a better way to build my grid rows
-//could make an object for it, and loop through the objects instead
-//however it has full functionality already so this would just be nitpicking
+//Simple attempt at making a function wordle
+//Could definitely move around some methods and such to clean up code a bit
+//Or create objects/classes for some things
+//But main goal was just to try a new IDE with a fun project and get it running well
 public class game implements ActionListener {
 
     //List holds our JTextField objects
     //Correct tracks current right on each submit
     //Count tracks our current location in 'Lists'
-    //answer is a placeholder for a random word for now
     File fileInput = new File("src/main/java/answers");
     ArrayList<JTextField> lists;
     Font font1 = new Font("SansSerif", Font.BOLD, 30);
@@ -43,30 +39,18 @@ public class game implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         String s = e.getActionCommand();
         if (s.equals("Submit") && correct != 5 && allFilled()) {
-            //need good way to check for multiple values
-            ArrayList<String> arr = new ArrayList<String>();
-            //
-            int i = 0;
+            ArrayList<String> arr = new ArrayList<>();
+            int initArr = 0;
             correct = 0;
-            //could use an arraylist here
-            //check for all the correct values first
-            //remove them from the arraylist
-            //then loop through to set the yellow values
-            //removing them as they occur so I end up with the correct amount
-            while (i < 5) {
-                if (answer.charAt(i) == lists.get(count).getText().charAt(0)) {
-                    lists.get(count).setBackground(Color.green);
-                    correct++;
-                } else if (answer.contains(lists.get(count).getText())) {
-                    lists.get(count).setBackground(Color.yellow);
-                } else {
-                    lists.get(count).setBackground(Color.gray);
-                }
-                lists.get(count).setEditable(false);
-                count++;
-                i++;
-            }
 
+            while (initArr < 5) {
+                arr.add(String.valueOf(answer.charAt(initArr)));
+                System.out.println(arr.get(initArr));
+                initArr++;
+
+            }
+            correctHelper(arr);
+            count += 5;
             if (correct != 5) {
                 lineEditable();
             }
@@ -74,6 +58,29 @@ public class game implements ActionListener {
         }
 
     }
+
+    //Helper for readability purposes - loop logic
+    //If value is correct and right spot it removes it from an array with all the possible values and makes frame green.
+    //If value is correct but wrong spot it checks to make sure it isn't green first
+    //Then it sets the frame yellow and removes it from the array
+    //otherwise it defaults gray
+    public void correctHelper(ArrayList<String> arr) {
+        int x = 0;
+        for (int loop = count; loop < count + 5; loop++) {
+            if (answer.charAt(x) == lists.get(loop).getText().charAt(0)) {
+                lists.get(loop).setBackground(Color.green);
+                correct++;
+                arr.remove(String.valueOf(answer.charAt(x)));
+            } else if (arr.contains(lists.get(loop).getText()) && lists.get(loop).getBackground() != Color.yellow && lists.get(loop).getBackground() != Color.green) {
+                lists.get(loop).setBackground(Color.yellow);
+                arr.remove(lists.get(loop).getText());
+            } else {
+                lists.get(loop).setBackground(Color.gray);
+            }
+            x++;
+        }
+    }
+
     //Helper method to only allow current line to receive input
     //Uses count variable to set each JTextField to be editable on current line
     public void lineEditable() {
@@ -83,9 +90,10 @@ public class game implements ActionListener {
             }
         }
     }
+
     //Checks if current line is filled up
     //If we hit the 'catch' it's likely because a null pointer and won't take down the program
-    //,so it will only run with proper input
+    //So it will only run with proper input
     public boolean allFilled() {
         for (int x = count; x < count + 5; x++) {
             try {
