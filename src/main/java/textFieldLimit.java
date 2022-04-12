@@ -18,7 +18,7 @@ public class textFieldLimit extends PlainDocument {
     public void insertString( int offset, String  str, AttributeSet attr ) throws BadLocationException {
         if (str == null) return;
 
-        if (((getLength() + str.length()) <= limit)   && str.matches("[a-zA-Z]")) {
+        if (((getLength() + str.length()) <= limit) && str.matches("[a-z]")) {
             super.insertString(offset, str, attr);
         }
     }
