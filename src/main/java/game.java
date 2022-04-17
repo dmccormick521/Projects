@@ -126,7 +126,7 @@ public class game implements ActionListener {
         lists = new ArrayList<>();
         for (int x = 0; x < 20; x++) {
             lists.add(new JTextField());
-            lists.get(x).setDocument(new textFieldLimit(1));
+            lists.get(x).setDocument(new src.main.java.textFieldLimit(1));
             lists.get(x).setFont(font1);
             frame.add(lists.get(x));
             if (x > 4) {
