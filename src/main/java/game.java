@@ -4,9 +4,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 //Simple attempt at making a function wordle
 //Could definitely move around some methods and such to clean up code a bit
@@ -17,13 +20,14 @@ public class game implements ActionListener {
     //List holds our JTextField objects
     //Correct tracks current right on each submit
     //Count tracks our current location in 'Lists'
-    File fileInput = new File("src/main/java/answers");
+    InputStream stream = game.class.getResourceAsStream("/answers");
+    //File fileInput = new File("src/main/java/answers");
     ArrayList<JTextField> lists;
     Font font1 = new Font("SansSerif", Font.BOLD, 30);
     private int count = 0;
     private int correct = 0;
     JFrame frame;
-    private final String answer = gameAnswer(fileInput);
+    private final String answer = gameAnswer(stream);
 
     //textFieldLimit class is connected here and is what restricts our input correctly for JTextFields
     public game() throws Exception {
@@ -146,16 +150,19 @@ public class game implements ActionListener {
     }
 
     //grabs answer from a random line in the text file provided
-    public String gameAnswer(File file) throws Exception {
-        RandomAccessFile f = new RandomAccessFile(file, "r");
+    public String gameAnswer(InputStream file) throws Exception {
+        int cur = 0;
+        String randomString = "";
+        BufferedReader reader = new BufferedReader(new InputStreamReader(file));
         long random = System.currentTimeMillis();
-        while (random > f.length()) {
+        while (random > 210) {
             random %= 100;
         }
-        f.seek(random);
-        f.readLine();
-        String randomString = f.readLine();
-        f.close();
+        while (cur != random && reader.ready()) {
+            randomString = reader.readLine();
+            cur++;
+        }
+        reader.close();
         return randomString;
     }
 
