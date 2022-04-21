@@ -1,5 +1,6 @@
 package src.main.java;
 
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -7,9 +8,7 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.RandomAccessFile;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 //Simple attempt at making a function wordle
 //Could definitely move around some methods and such to clean up code a bit
@@ -21,11 +20,12 @@ public class game implements ActionListener {
     //Correct tracks current right on each submit
     //Count tracks our current location in 'Lists'
     InputStream stream = game.class.getResourceAsStream("/answers");
-    //File fileInput = new File("src/main/java/answers");
-    ArrayList<JTextField> lists;
-    Font font1 = new Font("SansSerif", Font.BOLD, 30);
+
+
+    ArrayList<inputRow> lists;
+    private final static int wordLength = 5;
+    private int attempts = 5;
     private int count = 0;
-    private int correct = 0;
     JFrame frame;
     private final String answer = gameAnswer(stream);
 
@@ -46,101 +46,44 @@ public class game implements ActionListener {
     //Multiple of same character - how to highlight correctly and not overwrite
     public void actionPerformed(ActionEvent e) {
         String s = e.getActionCommand();
-        if (s.equals("Submit") && correct != 5 && allFilled()) {
-            ArrayList<String> arr = new ArrayList<>();
-            int initArr = 0;
-            correct = 0;
+        if (s.equals("Submit") && lists.get(count).isFilled()) {
 
-            while (initArr < 5) {
-                arr.add(String.valueOf(answer.charAt(initArr)));
-                initArr++;
-
-            }
-            correctHelper(arr);
-            count += 5;
-            if (correct != 5) {
-                lineEditable();
-            }
-            if (correct == 5) {
+            //correctHelper(answer); //so need to call my object.correctChecker(answer)
+            count += 1;
+            if (lists.get(count).correctChecker()) {
                 JOptionPane.showMessageDialog(null,
                         "YOU WIN!",
                         "Victory!",
                         JOptionPane.WARNING_MESSAGE);
+                System.exit(0);
             }
-            if (count == 20 && correct != 5) {
+            if (count == attempts) {
                 JOptionPane.showMessageDialog(null,
                         "Good try!" + "  The word was [" + answer + "]",
                         "Better luck next time!",
                         JOptionPane.WARNING_MESSAGE);
                 System.exit(0);
             }
+            lists.get(count).setEditable();
 
         }
 
     }
-
-    //Helper for readability purposes - loop logic
-    //If value is correct and right spot it removes it from an array with all the possible values and makes frame green.
-    //If value is correct but wrong spot it checks to make sure it isn't green first
-    //Then it sets the frame yellow and removes it from the array
-    //otherwise it defaults gray
-    public void correctHelper(ArrayList<String> arr) {
-        int x = 0;
-        for (int loop = count; loop < count + 5; loop++) {
-            if (answer.charAt(x) == lists.get(loop).getText().charAt(0)) {
-                lists.get(loop).setBackground(Color.green);
-                correct++;
-                arr.remove(String.valueOf(answer.charAt(x)));
-            } else if (arr.contains(lists.get(loop).getText()) && lists.get(loop).getBackground() != Color.yellow && lists.get(loop).getBackground() != Color.green) {
-                lists.get(loop).setBackground(Color.yellow);
-                arr.remove(lists.get(loop).getText());
-            } else {
-                lists.get(loop).setBackground(Color.gray);
-            }
-            x++;
-        }
-    }
-
     //Helper method to only allow current line to receive input
     //Uses count variable to set each JTextField to be editable on current line
-    public void lineEditable() {
-        if (count < 20) {
-            for (int x = count; x < count + 5; x++) {
-                lists.get(x).setEditable(true);
-            }
-        }
-    }
-
-    //Checks if current line is filled up
-    //If we hit the 'catch' it's likely because a null pointer and won't take down the program
-    //So it will only run with proper input
-    public boolean allFilled() {
-        for (int x = count; x < count + 5; x++) {
-            try {
-                lists.get(x).getText().charAt(0);
-            } catch (Exception e) {
-                return false;
-            }
-        }
-        return true;
-    }
 
     //contains many jframe values that are manipulated through this list
     public void initLists() {
         lists = new ArrayList<>();
-        for (int x = 0; x < 20; x++) {
-            lists.add(new JTextField());
-            lists.get(x).setDocument(new src.main.java.textFieldLimit(1));
-            lists.get(x).setFont(font1);
-            frame.add(lists.get(x));
-            if (x > 4) {
-                lists.get(x).setEditable(false);
-            }
+        inputRow rows;
+        for (int x = 0; x < attempts; x++) {
+            rows = new inputRow();
+            lists.add(rows);
         }
     }
 
     public void initGridAndFrame(JButton submit) {
-        GridLayout gl = new GridLayout(5, 5);
+        GridLayout gl = new GridLayout(attempts, wordLength);
         frame.setLayout(gl);
         frame.add(submit);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -150,6 +93,8 @@ public class game implements ActionListener {
     }
 
     //grabs answer from a random line in the text file provided
+    //currently not sure of a great way to check the size of the file since I'm using an inputstream...
+    //unless I just loop through the stream and count the lines that way
     public String gameAnswer(InputStream file) throws Exception {
         int cur = 0;
         String randomString = "";

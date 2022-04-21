@@ -10,7 +10,7 @@ import javax.swing.text.PlainDocument;
 public class textFieldLimit extends PlainDocument {
     private int limit;
 
-    textFieldLimit(int limit) {
+    public textFieldLimit(int limit) {
         super();
         this.limit = limit;
     }
