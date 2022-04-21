@@ -19,17 +19,14 @@ public class game implements ActionListener {
     //List holds our JTextField objects
     //Correct tracks current right on each submit
     //Count tracks our current location in 'Lists'
-    InputStream stream = game.class.getResourceAsStream("/answers");
-
-
-    ArrayList<inputRow> lists;
-    private final static int wordLength = 5;
-    private int attempts = 5;
-    private int count = 0;
-    JFrame frame;
+    InputStream stream = game.class.getResourceAsStream("/src/main/java/answers");
     private final String answer = gameAnswer(stream);
+    private final static int wordLength = 5;
+    private final int attempts = 5;
+    private int count = 0;
+    ArrayList<inputRow> lists;
+    JFrame frame;
 
-    //textFieldLimit class is connected here and is what restricts our input correctly for JTextFields
     public game() throws Exception {
         frame = new JFrame("Wordle or Not");
         JOptionPane.showMessageDialog(null,
@@ -42,21 +39,24 @@ public class game implements ActionListener {
         initGridAndFrame(submit);
     }
 
-    //Need to check for edge cases later
-    //Multiple of same character - how to highlight correctly and not overwrite
+    //deals with button click for submit button
+    //checks object to see if all values are filled in
+    //checks object to see if values are correct and if game has ended in some way
+    //increments array counter (count) for next input row object
+    //sets next input row object to be editable
     public void actionPerformed(ActionEvent e) {
         String s = e.getActionCommand();
         if (s.equals("Submit") && lists.get(count).isFilled()) {
 
-            //correctHelper(answer); //so need to call my object.correctChecker(answer)
-            count += 1;
-            if (lists.get(count).correctChecker()) {
+            if (lists.get(count).correctChecker(answer)) {
                 JOptionPane.showMessageDialog(null,
                         "YOU WIN!",
                         "Victory!",
                         JOptionPane.WARNING_MESSAGE);
                 System.exit(0);
             }
+
+            count += 1;
             if (count == attempts) {
                 JOptionPane.showMessageDialog(null,
                         "Good try!" + "  The word was [" + answer + "]",
@@ -69,31 +69,33 @@ public class game implements ActionListener {
         }
 
     }
-    //Helper method to only allow current line to receive input
-    //Uses count variable to set each JTextField to be editable on current line
 
-    //contains many jframe values that are manipulated through this list
+    //fills list with inputRow objects for manipulation
+    //calls method for first object to allow for inputs
     public void initLists() {
         lists = new ArrayList<>();
         inputRow rows;
         for (int x = 0; x < attempts; x++) {
-            rows = new inputRow();
+            rows = new inputRow(frame);
             lists.add(rows);
         }
+        lists.get(0).setEditable();
     }
 
+    //sets visual layout for frames
+    //could possibly change towards a grid bag layout
     public void initGridAndFrame(JButton submit) {
-        GridLayout gl = new GridLayout(attempts, wordLength);
+        GridLayout gl = new GridLayout(attempts + 1, wordLength);
         frame.setLayout(gl);
-        frame.add(submit);
+        frame.add(submit, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(500, 500);
+        frame.setSize(wordLength * 125, attempts * 125);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 
     //grabs answer from a random line in the text file provided
-    //currently not sure of a great way to check the size of the file since I'm using an inputstream...
+    //currently not sure of a great way to check the size of the file since I'm using an input stream...
     //unless I just loop through the stream and count the lines that way
     public String gameAnswer(InputStream file) throws Exception {
         int cur = 0;

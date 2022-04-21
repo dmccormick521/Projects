@@ -8,7 +8,7 @@ import javax.swing.text.PlainDocument;
 //Limits input textfields can receive to a single alphabetic character
 //May decide to stick with only lower case or upper case at some point - or will just convert characters between both
 public class textFieldLimit extends PlainDocument {
-    private int limit;
+    private final int limit;
 
     public textFieldLimit(int limit) {
         super();
